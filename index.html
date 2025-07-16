@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal de Aprendizaje: Git y Despliegue Web</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #1a1a1a;
+        }
+        .fira-code {
+            font-family: 'Fira Code', monospace;
+        }
+        .prose {
+            color: #d1d5db;
+        }
+        .prose h1, .prose h2, .prose h3 {
+            color: #ffffff;
+        }
+        .prose a {
+            color: #38bdf8;
+            text-decoration: underline;
+        }
+        .prose a:hover {
+            color: #7dd3fc;
+        }
+        .prose code {
+            color: #f87171;
+            background-color: #374151;
+            padding: 0.2em 0.4em;
+            border-radius: 0.25rem;
+        }
+        .prose pre {
+             background-color: #1f2937;
+             padding: 1rem;
+             border-radius: 0.5rem;
+        }
+        .prose strong {
+            color: #fef08a;
+        }
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+        }
+    </style>
+</head>
+<body class="text-gray-300">
+
+    <!-- Main Index Page -->
+    <div class="min-h-screen bg-[#1a1a1a] p-4 sm:p-6 lg:p-8">
+        <div class="max-w-5xl mx-auto">
+            <header class="text-center mb-12">
+                <h1 class="text-4xl sm:text-5xl font-bold text-white">Centro de Aprendizaje de Git</h1>
+                <p class="mt-4 text-lg text-gray-400">Aprende Git y a desplegar tus proyectos web con simuladores interactivos y guías paso a paso.</p>
+            </header>
+
+            <main>
+                <!-- Simulators Section -->
+                <section id="simulators">
+                    <h2 class="text-3xl font-bold text-white mb-6 text-center">Simuladores Interactivos</h2>
+                    <div class="grid md:grid-cols-2 gap-8">
+                        <!-- Simulator 1 Card -->
+                        <div class="bg-[#252526] rounded-lg p-6 flex flex-col border border-gray-700 hover:border-blue-500 transition-all">
+                            <h3 class="text-2xl font-bold text-white mb-3">Simulador 1: Fundamentos de Git</h3>
+                            <p class="text-gray-400 mb-6 flex-grow">Aprende los comandos básicos de Git desde cero en un entorno seguro. Crearás un repositorio, harás tu primer commit y entenderás el flujo de trabajo esencial.</p>
+                            <!-- MODIFIED: This is now a direct link -->
+                            <a href="simulador-html.html" class="mt-auto block text-center w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg transition-colors no-underline">
+                                Iniciar Simulación Básica
+                            </a>
+                        </div>
+                        <!-- Simulator 2 Card -->
+                        <div class="bg-[#252526] rounded-lg p-6 flex flex-col border border-gray-700 hover:border-green-500 transition-all">
+                            <h3 class="text-2xl font-bold text-white mb-3">Simulador 2: Despliegue de React</h3>
+                            <p class="text-gray-400 mb-6 flex-grow">¿Ya tienes un proyecto de React? Aprende el flujo de trabajo profesional para desplegarlo en la web usando `gh-pages`, la herramienta estándar del ecosistema.</p>
+                             <!-- MODIFIED: This is now a direct link -->
+                            <a href="simulador-react.html" class="mt-auto block text-center w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-4 rounded-lg transition-colors no-underline">
+                                Iniciar Simulación de React
+                            </a>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Setup Guide Section -->
+                <section id="setup-guide" class="mt-20">
+                    <h2 class="text-3xl font-bold text-white mb-8 text-center">Prepara tu Entorno de Desarrollo Real</h2>
+                    <div class="max-w-3xl mx-auto space-y-4">
+                        <!-- Accordion Item 1: VS Code -->
+                        <div class="bg-[#252526] rounded-lg border border-gray-700">
+                            <button class="accordion-button w-full text-left p-4 flex justify-between items-center">
+                                <span class="text-xl font-semibold text-white">1. Instalar Visual Studio Code</span>
+                                <svg class="w-6 h-6 text-gray-400 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                            </button>
+                            <div class="accordion-content">
+                                <div class="prose prose-invert max-w-none p-4 border-t border-gray-700">
+                                    <p>VS Code es el editor de código más popular. Es donde escribirás y organizarás todos tus proyectos.</p>
+                                    <ol>
+                                        <li>Ve a la página oficial: <a href="https://code.visualstudio.com/" target="_blank" rel="noopener noreferrer">code.visualstudio.com</a>.</li>
+                                        <li>El sitio detectará tu sistema operativo (Windows, Mac, Linux) y te ofrecerá el instalador correcto.</li>
+                                        <li>Descarga y ejecuta el instalador, aceptando las opciones por defecto.</li>
+                                    </ol>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Accordion Item 2: Node.js -->
+                         <div class="bg-[#252526] rounded-lg border border-gray-700">
+                            <button class="accordion-button w-full text-left p-4 flex justify-between items-center">
+                                <span class="text-xl font-semibold text-white">2. Instalar Node.js y npm</span>
+                                 <svg class="w-6 h-6 text-gray-400 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                            </button>
+                            <div class="accordion-content">
+                                <div class="prose prose-invert max-w-none p-4 border-t border-gray-700">
+                                    <p>Node.js es un entorno que permite ejecutar JavaScript fuera del navegador. Es esencial para trabajar con React. Al instalarlo, también se instala <strong>npm</strong> (Node Package Manager), que usarás para manejar las dependencias de tu proyecto (como React o `gh-pages`).</p>
+                                    <ol>
+                                        <li>Ve a la página oficial: <a href="https://nodejs.org/" target="_blank" rel="noopener noreferrer">nodejs.org</a>.</li>
+                                        <li>Descarga la versión <strong>LTS</strong> (Long Term Support). Es la más estable.</li>
+                                        <li>Ejecuta el instalador y sigue los pasos, aceptando las opciones por defecto.</li>
+                                        <li>Para verificar que se instaló correctamente, abre una terminal (CMD, PowerShell o Terminal en Mac) y escribe: <code>node -v</code> y luego <code>npm -v</code>. Deberías ver los números de las versiones instaladas.</li>
+                                    </ol>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Accordion Item 3: Git -->
+                         <div class="bg-[#252526] rounded-lg border border-gray-700">
+                            <button class="accordion-button w-full text-left p-4 flex justify-between items-center">
+                                <span class="text-xl font-semibold text-white">3. Instalar Git</span>
+                                 <svg class="w-6 h-6 text-gray-400 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                            </button>
+                            <div class="accordion-content">
+                                <div class="prose prose-invert max-w-none p-4 border-t border-gray-700">
+                                    <p>Git es el sistema de control de versiones que te permite guardar el historial de tu código. Es la herramienta fundamental que has practicado en los simuladores.</p>
+                                    <ol>
+                                        <li>Ve a la página oficial: <a href="https://git-scm.com/" target="_blank" rel="noopener noreferrer">git-scm.com</a>.</li>
+                                        <li>Descarga el instalador para tu sistema operativo.</li>
+                                        <li>Ejecuta el instalador. Durante la instalación, te hará muchas preguntas. <strong>Para empezar, es seguro aceptar todas las opciones por defecto.</strong> La configuración predeterminada es excelente para la mayoría de los usuarios.</li>
+                                         <li>Para verificar la instalación, abre una nueva terminal y escribe: code>git --version</code>. Deberías ver la versión de Git instalada.</li>
+                                    </ol>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Accordion Item 4: GitHub Repo -->
+                         <div class="bg-[#252526] rounded-lg border border-gray-700">
+                            <button class="accordion-button w-full text-left p-4 flex justify-between items-center">
+                                <span class="text-xl font-semibold text-white">4. Crear un Repositorio en GitHub</span>
+                                 <svg class="w-6 h-6 text-gray-400 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                            </button>
+                            <div class="accordion-content">
+                                <div class="prose prose-invert max-w-none p-4 border-t border-gray-700">
+                                    <p>GitHub es la plataforma donde guardarás tu código en la nube (repositorios remotos). Es el "lugar" al que te conectas cuando usas el comando <code>git push</code>.</p>
+                                    <ol>
+                                        <li>Si no tienes una cuenta, crea una gratis en <a href="https://github.com/" target="_blank" rel="noopener noreferrer">github.com</a>.</li>
+                                        <li>Una vez dentro, busca el botón <strong>"New"</strong> (Nuevo) o un ícono de `+` en la esquina superior derecha y selecciona <strong>"New repository"</strong>.</li>
+                                        <li><strong>Repository name:</strong> Dale un nombre a tu proyecto (ej. code>mi-primer-proyecto</code>).</li>
+                                        <li><strong>Description (Optional):</strong> Añade una breve descripción.</li>
+                                        <li>Selecciona <strong>Public</strong> (Público) para que cualquiera pueda verlo (ideal para portafolios).</li>
+                                        <li><strong>No marques</strong> ninguna de las casillas como "Add a README file", "Add .gitignore" o "Choose a license" por ahora. Es mejor crearlos desde tu computadora.</li>
+                                        <li>Haz clic en el botón verde <strong>"Create repository"</strong>.</li>
+                                        <li>¡Listo! GitHub te mostrará una página con la URL de tu repositorio (ej. <code>https://github.com/tu-usuario/mi-primer-proyecto.git</code>). Esta es la URL que usarás en el comando <code>git remote add origin [URL]</code>.</li>
+                                    </ol>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </main>
+
+            <footer class="text-center mt-20 pb-8">
+                <p class="text-gray-500">Creado para facilitar el aprendizaje de Git y el despliegue web.</p>
+            </footer>
+        </div>
+    </div>
+
+    <!-- REMOVED: The simulator divs and their initialization scripts are no longer needed here -->
+
+    <script>
+        // --- Accordion Logic for Index Page ---
+        // This is the only script needed for the index page now.
+        document.querySelectorAll('.accordion-button').forEach(button => {
+            button.addEventListener('click', () => {
+                const accordionContent = button.nextElementSibling;
+                const isOpen = button.classList.toggle('open');
+                
+                const icon = button.querySelector('svg');
+                if (icon) {
+                    icon.style.transform = isOpen ? 'rotate(180deg)' : 'rotate(0deg)';
+                }
+
+                if (isOpen) {
+                    accordionContent.style.maxHeight = accordionContent.scrollHeight + "px";
+                } else {
+                    accordionContent.style.maxHeight = "0";
+                }
+            });
+        });
+    </script>
+</body>
+</html>

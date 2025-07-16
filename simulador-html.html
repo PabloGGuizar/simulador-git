@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulador IDE para Aprender Git y gh-pages</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .fira-code {
+            font-family: 'Fira Code', monospace;
+        }
+        /* Custom scrollbar for webkit browsers */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #1e1e1e;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #4f4f4f;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #6a6a6a;
+        }
+        .terminal-output::before {
+            content: '$';
+            margin-right: 0.5rem;
+            color: #a0a0a0;
+        }
+        .command-input-container::before {
+            content: '$';
+            margin-right: 0.5rem;
+            color: #a0a0a0;
+        }
+    </style>
+</head>
+<body class="bg-[#1e1e1e] text-gray-300">
+
+    <div id="app" class="h-screen w-screen flex flex-col">
+        <!-- Main Content Area -->
+        <div class="flex flex-1 min-h-0">
+            <!-- Activity Bar -->
+            <div class="bg-[#333333] w-12 flex flex-col items-center py-4 space-y-6">
+                <div class="text-white" title="Explorador">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
+                </div>
+                <div class="text-gray-500" title="Git">
+                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6l-6 6-6-6"></path><path d="M12 18V6"></path></svg>
+                </div>
+            </div>
+
+            <!-- Sidebar -->
+            <div id="sidebar" class="bg-[#252526] w-64 p-2 flex flex-col">
+                <h2 class="text-xs uppercase text-gray-400 font-bold tracking-wider px-2">Explorador</h2>
+                <div id="file-explorer" class="mt-4 space-y-1">
+                    <!-- Files will be injected here by JS -->
+                </div>
+                <div class="mt-auto p-2 bg-[#333333] rounded-lg">
+                    <h3 id="tutorial-title" class="font-bold text-white">Paso 1: ¡Bienvenido!</h3>
+                    <p id="tutorial-instruction" class="text-sm text-gray-300 mt-2"></p>
+                    <div id="tutorial-command-container" class="mt-3 hidden">
+                        <p class="text-xs text-gray-400">Comando a ejecutar:</p>
+                        <code id="tutorial-command" class="fira-code text-sm bg-[#1e1e1e] text-cyan-400 p-1 rounded-md block w-full text-center"></code>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Editor and Terminal -->
+            <div class="flex-1 flex flex-col">
+                <!-- Editor Tabs -->
+                <div class="bg-[#252526] flex">
+                    <div id="editor-tabs" class="flex">
+                        <!-- Tabs will be injected here by JS -->
+                    </div>
+                </div>
+                
+                <!-- Editor -->
+                <div id="editor-container" class="flex-1 bg-[#1e1e1e] p-4 relative">
+                     <textarea id="editor" class="fira-code w-full h-full bg-transparent text-gray-300 resize-none focus:outline-none leading-relaxed" spellcheck="false" disabled></textarea>
+                     <div id="editor-placeholder" class="absolute top-4 left-4 text-gray-500 pointer-events-none fira-code">
+                        <!-- Placeholder content will be injected here -->
+                        <p>// Aún no hay ningún archivo abierto.</p>
+                        <p>// Completa el Paso 2 para crear tu primer archivo.</p>
+                     </div>
+                </div>
+
+                <!-- Terminal -->
+                <div id="terminal" class="bg-[#1e1e1e] border-t-2 border-[#333333] h-1/3 flex flex-col">
+                    <div class="bg-[#333333] px-4 py-1 text-sm">
+                        <p>TERMINAL</p>
+                    </div>
+                    <div id="terminal-body" class="flex-1 p-2 overflow-y-auto fira-code text-sm">
+                        <div id="terminal-output-container">
+                           <!-- Output will be injected here -->
+                        </div>
+                        <div id="terminal-input-line" class="command-input-container flex">
+                            <input type="text" id="terminal-input" class="fira-code bg-transparent flex-1 focus:outline-none" autocomplete="off" spellcheck="false">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Status Bar -->
+        <div class="bg-[#007acc] text-white h-6 flex items-center justify-between px-4 text-sm">
+            <div class="flex items-center space-x-2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6l-6 6-6-6"></path><path d="M12 18V6"></path></svg>
+                <span id="branch-name">main</span>
+            </div>
+            <div>Simulador de Git</div>
+        </div>
+    </div>
+    
+    <!-- Modal de Finalización -->
+    <div id="completion-modal" class="hidden fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50">
+        <div class="bg-[#252526] rounded-lg p-8 max-w-lg text-center shadow-2xl">
+            <h2 class="text-2xl font-bold text-white mb-4">🎉 ¡Felicidades! 🎉</h2>
+            <p class="text-gray-300 mb-4">Has completado la simulación. Has aprendido los pasos básicos para inicializar un repositorio, hacer tu primer commit y simular el despliegue a GitHub Pages.</p>
+            <p class="text-gray-300 mb-6">Tu página estaría disponible en una URL como esta:</p>
+            <code class="fira-code text-lg bg-[#1e1e1e] text-green-400 p-2 rounded-md block w-full truncate">https://tu-usuario.github.io/mi-proyecto/</code>
+            <button id="restart-button" class="mt-8 bg-[#007acc] hover:bg-[#005a9e] text-white font-bold py-2 px-4 rounded-lg transition-colors">
+                Volver a empezar
+            </button>
+        </div>
+    </div>
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- DOM Elements ---
+            const fileExplorer = document.getElementById('file-explorer');
+            const editor = document.getElementById('editor');
+            const editorPlaceholder = document.getElementById('editor-placeholder');
+            const editorTabs = document.getElementById('editor-tabs');
+            const terminalInput = document.getElementById('terminal-input');
+            const terminalOutputContainer = document.getElementById('terminal-output-container');
+            const tutorialTitle = document.getElementById('tutorial-title');
+            const tutorialInstruction = document.getElementById('tutorial-instruction');
+            const tutorialCommandContainer = document.getElementById('tutorial-command-container');
+            const tutorialCommand = document.getElementById('tutorial-command');
+            const branchName = document.getElementById('branch-name');
+            const completionModal = document.getElementById('completion-modal');
+            const restartButton = document.getElementById('restart-button');
+
+            // --- State ---
+            let state = {
+                currentStep: 0,
+                files: [],
+                activeFile: null,
+                terminalHistory: [],
+                gitInitialized: false,
+                stagedFiles: [],
+                commits: [],
+            };
+
+            const htmlContent = `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Mi Página</title>
+</head>
+<body>
+    <h1>¡Hola, Mundo!</h1>
+    <p>Mi primera página con GitHub Pages.</p>
+</body>
+</html>`;
+
+            // --- Tutorial Steps ---
+            const tutorialSteps = [
+                { // 0
+                    title: "Paso 1: ¡Bienvenido!",
+                    instruction: "Este es un simulador de IDE para aprender Git. Tu primer objetivo es crear un archivo. Ve al explorador de archivos a la izquierda, y haz clic en el botón 'Nuevo Archivo'.",
+                    action: { type: 'ui', target: 'create-file' },
+                },
+                { // 1
+                    title: "Paso 2: Crea tu primer archivo",
+                    instruction: "¡Excelente! Ahora nombra tu archivo. Escribe 'index.html' en el campo y presiona Enter.",
+                    action: { type: 'ui', target: 'name-file' },
+                },
+                { // 2
+                    title: "Paso 3: Escribe algo de código",
+                    instruction: `El archivo está vacío. Copia y pega el siguiente código HTML en el editor. Haz clic en el botón 'Copiar Código' y pégalo en el área del editor.`,
+                    action: { type: 'ui', target: 'write-code' },
+                },
+                { // 3
+                    title: "Paso 4: Inicializa Git",
+                    instruction: "Ahora que tienes un archivo, es hora de usar Git. El primer paso es inicializar un repositorio. Escribe el siguiente comando en la terminal y presiona Enter.",
+                    command: "git init",
+                    output: "Se ha inicializado un repositorio Git vacío en /home/user/project/.git/"
+                },
+                { // 4
+                    title: "Paso 5: Revisa el estado",
+                    instruction: "¡Bien hecho! Ahora tienes un repositorio local. Revisa el estado del repositorio para ver qué archivos ha detectado Git. Escribe el comando:",
+                    command: "git status",
+                    output: `En la rama main\n\nNo hay commits todavía\n\nArchivos sin seguimiento:\n  (usa "git add <archivo>..." para incluirlo en lo que se va a commitear)\n\t<span class="text-red-400">index.html</span>\n\nnada agregado al commit pero hay archivos sin seguimiento (usa "git add" para hacer seguimiento)`
+                },
+                { // 5
+                    title: "Paso 6: Añade el archivo al área de preparación (Staging)",
+                    instruction: "Git te informa que 'index.html' no está siendo rastreado. Debes añadirlo al 'área de preparación' para que Git sepa que quieres incluirlo en el próximo 'commit'.",
+                    command: "git add index.html",
+                    output: ""
+                },
+                { // 6
+                    title: "Paso 7: Revisa el estado de nuevo",
+                    instruction: "Perfecto. Ahora que el archivo está en el área de preparación, revisa el estado de nuevo para ver la diferencia.",
+                    command: "git status",
+                    output: `En la rama main\n\nNo hay commits todavía\n\nCambios a ser commiteados:\n  (usa "git rm --cached <archivo>..." para sacar del área de preparación)\n\t<span class="text-green-400">nuevo archivo:   index.html</span>\n`
+                },
+                { // 7
+                    title: "Paso 8: Haz tu primer commit",
+                    instruction: "El archivo está listo para ser guardado en el historial de tu proyecto. A esto se le llama 'commit'. Un commit es como una instantánea de tus archivos en un momento dado. Usa el siguiente comando. El texto después de '-m' es el mensaje del commit.",
+                    command: 'git commit -m "Commit inicial"',
+                    output: `[main (commit-raíz) 1a2b3c4] Commit inicial\n 1 file changed, 10 insertions(+)\n create mode 100644 index.html`
+                },
+                { // 8
+                    title: "Paso 9: Conecta tu repositorio local a GitHub",
+                    instruction: `Normalmente, ahora crearías un repositorio en GitHub.com. Luego, lo conectarías a tu repositorio local. Simularemos este paso con el siguiente comando.`,
+                    command: 'git remote add origin https://github.com/tu-usuario/mi-proyecto.git',
+                    output: ""
+                },
+                { // 9
+                    title: "Paso 10: Sube tus cambios a GitHub",
+                    instruction: "Ahora, sube tu commit a GitHub. Esto hace que tu código esté disponible en línea. El comando 'push' envía tus commits al repositorio remoto (que llamamos 'origin').",
+                    command: 'git push -u origin main',
+                    output: `Enumerando objetos: 3, listo.\nContando objetos: 100% (3/3), listo.\nEscribiendo objetos: 100% (3/3), 250 bytes | 250.00 KiB/s, listo.\nTotal 3 (delta 0), reusado 0 (delta 0)\nPara https://github.com/tu-usuario/mi-proyecto.git\n * [new branch]      main -> main\nLa rama 'main' está configurada para rastrear la rama remota 'main' de 'origin'.`
+                },
+                { // 10
+                    title: "Paso 11: ¡Despliegue a GitHub Pages!",
+                    instruction: "¡Casi listo! GitHub Pages puede publicar tu sitio directamente desde tu repositorio. Aunque esto a menudo se configura en el sitio web de GitHub, hemos simulado el resultado. ¡Has terminado!",
+                    action: { type: 'ui', target: 'finish' }
+                }
+            ];
+
+            // --- Functions ---
+            function render() {
+                // Render Files
+                fileExplorer.innerHTML = '';
+                if (state.files.length === 0 && state.currentStep === 0) {
+                    const newFileBtn = document.createElement('button');
+                    newFileBtn.id = 'new-file-btn';
+                    newFileBtn.className = 'bg-blue-600 text-white px-3 py-1 rounded text-sm hover:bg-blue-500 w-full';
+                    newFileBtn.textContent = 'Nuevo Archivo';
+                    newFileBtn.onclick = () => advanceTutorial({ type: 'ui', target: 'create-file' });
+                    fileExplorer.appendChild(newFileBtn);
+                } else if (state.files.length > 0 && !state.files[0].name) {
+                     const input = document.createElement('input');
+                     input.type = 'text';
+                     input.className = 'w-full bg-[#333333] text-white p-1 rounded focus:outline-none focus:ring-2 focus:ring-blue-500';
+                     input.placeholder = 'Nombre del archivo...';
+                     input.onkeydown = (e) => {
+                         if (e.key === 'Enter' && e.target.value.trim() === 'index.html') {
+                             state.files[0].name = 'index.html';
+                             state.files[0].content = '';
+                             state.activeFile = 'index.html';
+                             advanceTutorial({ type: 'ui', target: 'name-file' });
+                         }
+                     };
+                     fileExplorer.appendChild(input);
+                     setTimeout(() => input.focus(), 0);
+                } else {
+                    state.files.forEach(file => {
+                        const fileEl = document.createElement('div');
+                        fileEl.className = `px-2 py-1 rounded cursor-pointer ${state.activeFile === file.name ? 'bg-[#37373d]' : ''}`;
+                        fileEl.textContent = file.name;
+                        if (state.stagedFiles.includes(file.name)) {
+                            fileEl.innerHTML += ' <span class="text-green-400">S</span>';
+                        } else if (state.gitInitialized) {
+                            fileEl.innerHTML += ' <span class="text-red-400">U</span>';
+                        }
+                        fileExplorer.appendChild(fileEl);
+                    });
+                }
+                
+                // Render Editor
+                if (state.activeFile) {
+                    const file = state.files.find(f => f.name === state.activeFile);
+                    editor.value = file.content;
+                    editorPlaceholder.classList.add('hidden');
+                    editor.classList.remove('hidden');
+                    editor.disabled = state.currentStep !== 2;
+                    
+                    // Render Tab
+                    editorTabs.innerHTML = '';
+                    const tabEl = document.createElement('div');
+                    tabEl.className = 'bg-[#1e1e1e] px-4 py-2 text-white flex items-center space-x-2';
+                    tabEl.textContent = state.activeFile;
+                    editorTabs.appendChild(tabEl);
+                } else {
+                    editor.classList.add('hidden');
+                    editorPlaceholder.classList.remove('hidden');
+                    editorTabs.innerHTML = '';
+                }
+
+                // Render Tutorial
+                const step = tutorialSteps[state.currentStep];
+                tutorialTitle.textContent = step.title;
+                tutorialInstruction.innerHTML = step.instruction;
+                if (step.command) {
+                    tutorialCommandContainer.classList.remove('hidden');
+                    tutorialCommand.textContent = step.command;
+                } else {
+                    tutorialCommandContainer.classList.add('hidden');
+                }
+                
+                if (step.action && step.action.target === 'write-code') {
+                    if (!document.getElementById('copy-code-btn')) {
+                        const copyBtn = document.createElement('button');
+                        copyBtn.id = 'copy-code-btn';
+                        copyBtn.className = 'bg-green-600 text-white px-3 py-1 rounded text-sm hover:bg-green-500 w-full mt-3';
+                        copyBtn.textContent = 'Copiar Código';
+                        copyBtn.onclick = () => {
+                            // Fallback for clipboard API in secure contexts
+                            const textArea = document.createElement("textarea");
+                            textArea.value = htmlContent;
+                            textArea.style.top = "0";
+                            textArea.style.left = "0";
+                            textArea.style.position = "fixed";
+                            document.body.appendChild(textArea);
+                            textArea.focus();
+                            textArea.select();
+                            try {
+                                const successful = document.execCommand('copy');
+                                if (successful) {
+                                    copyBtn.textContent = '¡Copiado!';
+                                    setTimeout(() => { copyBtn.textContent = 'Copiar Código'; }, 2000);
+                                } else {
+                                    copyBtn.textContent = 'Error al copiar';
+                                }
+                            } catch (err) {
+                                console.error('Error al copiar:', err);
+                                copyBtn.textContent = 'Error al copiar';
+                            }
+                            document.body.removeChild(textArea);
+                        };
+                        tutorialCommandContainer.insertAdjacentElement('afterend', copyBtn);
+                    }
+                } else {
+                    const btn = document.getElementById('copy-code-btn');
+                    if (btn) btn.remove();
+                }
+
+            }
+
+            function advanceTutorial(action) {
+                const currentStepData = tutorialSteps[state.currentStep];
+                
+                // Check if the action matches what the tutorial expects
+                if (currentStepData.action) {
+                    if (action.type === currentStepData.action.type && action.target === currentStepData.action.target) {
+                        state.currentStep++;
+                        runCurrentStepLogic();
+                        render();
+                    }
+                } else if (currentStepData.command) {
+                    if(action.type === 'command' && action.command.trim() === currentStepData.command) {
+                        // Add command to terminal history
+                        const outputEl = document.createElement('div');
+                        outputEl.className = 'terminal-output';
+                        outputEl.textContent = action.command;
+                        terminalOutputContainer.appendChild(outputEl);
+
+                        // Add command output to terminal history
+                        if (currentStepData.output) {
+                            const resultEl = document.createElement('div');
+                            resultEl.innerHTML = currentStepData.output.replace(/\n/g, '<br>');
+                            terminalOutputContainer.appendChild(resultEl);
+                        }
+                        
+                        state.currentStep++;
+                        runCurrentStepLogic();
+                        render();
+                        terminalInput.value = '';
+                        terminalInput.parentElement.parentElement.scrollTop = terminalInput.parentElement.parentElement.scrollHeight;
+
+                    } else if (action.type === 'command') {
+                        // Wrong command
+                        const outputEl = document.createElement('div');
+                        outputEl.className = 'terminal-output';
+                        outputEl.textContent = action.command;
+                        terminalOutputContainer.appendChild(outputEl);
+
+                        const errorEl = document.createElement('div');
+                        errorEl.innerHTML = `<span class="text-red-400">Comando incorrecto. Intenta con:</span> <code class="fira-code text-cyan-400">${currentStepData.command}</code>`;
+                        terminalOutputContainer.appendChild(errorEl);
+                        terminalInput.value = '';
+                        terminalInput.parentElement.parentElement.scrollTop = terminalInput.parentElement.parentElement.scrollHeight;
+                    }
+                }
+            }
+            
+            function runCurrentStepLogic() {
+                const step = tutorialSteps[state.currentStep];
+                switch (state.currentStep) {
+                    case 1: // After clicking "New File"
+                        state.files.push({ name: null, content: null });
+                        break;
+                    case 3: // After naming file, before git init
+                        state.gitInitialized = true;
+                        break;
+                    case 6: // After git add
+                        state.stagedFiles.push('index.html');
+                        break;
+                    case 8: // After commit
+                        state.stagedFiles = [];
+                        state.commits.push({
+                            hash: '1a2b3c4',
+                            message: 'Commit inicial'
+                        });
+                        break;
+                    case 11: // Finish
+                        completionModal.classList.remove('hidden');
+                        break;
+                }
+            }
+
+            function handleTerminalInput(e) {
+                if (e.key === 'Enter') {
+                    const command = terminalInput.value;
+                    if (command) {
+                        advanceTutorial({ type: 'command', command });
+                    }
+                }
+            }
+            
+            function handleEditorInput() {
+                const file = state.files.find(f => f.name === state.activeFile);
+                if (file) {
+                    file.content = editor.value;
+                }
+                
+                // Check if code is pasted correctly
+                if (state.currentStep === 2 && editor.value.trim() === htmlContent.trim()) {
+                    advanceTutorial({ type: 'ui', target: 'write-code' });
+                }
+            }
+
+            function init() {
+                state = {
+                    currentStep: 0,
+                    files: [],
+                    activeFile: null,
+                    terminalHistory: [],
+                    gitInitialized: false,
+                    stagedFiles: [],
+                    commits: [],
+                };
+                terminalOutputContainer.innerHTML = '<p class="text-gray-400">Simulador de Terminal. Sigue las instrucciones del panel izquierdo.</p>';
+                terminalInput.value = '';
+                editor.value = '';
+                completionModal.classList.add('hidden');
+                runCurrentStepLogic();
+                render();
+            }
+
+            // --- Event Listeners ---
+            terminalInput.addEventListener('keydown', handleTerminalInput);
+            editor.addEventListener('input', handleEditorInput);
+            restartButton.addEventListener('click', init);
+
+            // --- Initial Load ---
+            init();
+        });
+    </script>
+</body>
+</html>
